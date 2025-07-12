@@ -12,6 +12,7 @@ import {
 import { UserButton } from "@/components/user-button";
 import { GalleryVerticalEnd } from "lucide-react";
 import Link from "next/link";
+import { UserLimitsProgress } from "./_user-limits";
 
 export function DashboardSidebar() {
   return (
@@ -34,6 +35,7 @@ export function DashboardSidebar() {
                 </div>
               </Link>
             </SidebarMenuButton>
+            <UserLimitsProgress inSidebar={true} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -10,6 +10,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from "@/components/ui/breadcrumb";
+import { DynamicBreadcrumb } from "./_components/_dynamic-breadcrumb";
 import { Button } from "@/components/ui/button";
 import { CreateLinkCTA } from "./_components/_cta";
 import { auth } from "@/lib/auth";
@@ -45,13 +46,7 @@ export default async function DashboardRootLayout({
               orientation="vertical"
               className="mr-2 data-[orientation=vertical]:h-4"
             />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+            <DynamicBreadcrumb />
           </div>
           <CreateLinkCTA userId={session.user.id} />
         </header>

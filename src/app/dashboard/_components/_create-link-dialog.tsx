@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 interface CreateLinkDialogProps {
   open: boolean;
@@ -34,6 +35,7 @@ export function CreateLinkDialog({
   onOpenChange,
   userId,
 }: CreateLinkDialogProps) {
+  const { data: session, refetch } = authClient.useSession();
   const router = useRouter();
   const utils = trpc.useUtils();
   const form = useForm({ defaultValues: { key: "", destination: "" } });
@@ -46,6 +48,7 @@ export function CreateLinkDialog({
   const onSubmit = async (values: { key: string; destination: string }) => {
     try {
       await createLink.mutateAsync({ ...values, createdById: userId });
+      refetch();
       onOpenChange(false);
       form.reset();
       toast.success("Successfully shortened your url");
