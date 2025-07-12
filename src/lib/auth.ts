@@ -2,14 +2,14 @@ import { betterAuth } from "better-auth";
 import { env } from "./env";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
-import {
-  jwt,
-  openAPI,
-  username,
-  haveIBeenPwned,
-  admin,
-} from "better-auth/plugins";
+import { openAPI, username, haveIBeenPwned, admin } from "better-auth/plugins";
 import { nextCookies } from "better-auth/next-js";
+import Stripe from "stripe";
+import { stripe } from "@better-auth/stripe";
+
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-06-30.basil",
+});
 
 export const auth = betterAuth({
   appName: "AWFixer Links",
@@ -36,6 +36,18 @@ export const auth = betterAuth({
         type: "boolean",
         required: false,
         defaultValue: false,
+        input: false,
+      },
+      links: {
+        type: "number",
+        required: false,
+        defaultValue: 0,
+        input: false,
+      },
+      analytics: {
+        type: "string",
+        required: false,
+        defaultValue: "basic",
         input: false,
       },
     },
@@ -69,6 +81,21 @@ export const auth = betterAuth({
     haveIBeenPwned({
       customPasswordCompromisedMessage:
         "Password has been found in a security breach. Please choose a more secure password.",
+    }),
+    stripe({
+      stripeClient,
+      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
+      createCustomerOnSignUp: true,
+      subscription: {
+        enabled: true,
+        plans: [
+          {
+            name: "free",
+            priceId: "price_1RjtffRtO1V0nNQXevaCCUiD",
+            limit: { links: 5, analytics: "basic" },
+          },
+        ],
+      },
     }),
   ],
   advanced: {
