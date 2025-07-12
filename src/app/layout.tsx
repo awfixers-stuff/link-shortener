@@ -4,6 +4,9 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { TRPCProvider } from "@/providers/trpc-provider";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+import { fileRouter } from "./server/api/uploadthing/core";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +39,10 @@ export default async function RootLayout({
           defaultTheme="dark"
           disableTransitionOnChange
         >
-          <TRPCProvider>{children}</TRPCProvider>
+          <TRPCProvider>
+            <NextSSRPlugin routerConfig={extractRouterConfig(fileRouter)} />
+            {children}
+          </TRPCProvider>
           <Toaster richColors />
         </ThemeProvider>
       </body>
