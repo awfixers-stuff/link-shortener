@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreVerticalIcon, Trash2Icon } from "lucide-react";
+import { getUserLimits } from "@/lib/access-control";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -31,14 +32,17 @@ export default async function DashboardPage() {
   }
 
   const data = await trpc.links.getLinksByUserId({ userId: session.user.id });
+  const { analytics } = await getUserLimits();
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
-      <div className="auto-rows min grid gap-4 md:grid-cols-3">
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-        <div className="bg-muted/50 aspect-video rounded-xl" />
-      </div>
+      {analytics !== "basic" && (
+        <div className="auto-rows min grid gap-4 md:grid-cols-3">
+          <div className="bg-muted/50 aspect-video rounded-xl" />
+          <div className="bg-muted/50 aspect-video rounded-xl" />
+          <div className="bg-muted/50 aspect-video rounded-xl" />
+        </div>
+      )}
       <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl px-4 py-2 md:min-h-min">
         {data?.links ? (
           <Table>
