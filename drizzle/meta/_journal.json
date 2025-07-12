@@ -36,6 +36,34 @@
       "when": 1752120016094,
       "tag": "0004_colorful_forge",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1752287005484,
+      "tag": "0005_happy_charles_xavier",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1752289533581,
+      "tag": "0006_friendly_hobgoblin",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1752289587346,
+      "tag": "0007_lonely_chameleon",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1752293767684,
+      "tag": "0008_uneven_mimic",
+      "breakpoints": true
     }
   ]
 }

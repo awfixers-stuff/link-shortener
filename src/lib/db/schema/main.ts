@@ -20,7 +20,9 @@ export const link = pgTable(
     destination: text("destination").notNull(),
     visits: integer("visits").default(0),
     status: linkStatus("status").default("online"),
-    createdById: text("created_by_id").references(() => user.id),
+    createdById: text("created_by_id").references(() => user.id, {
+      onDelete: "cascade",
+    }),
     createdAt: date("created_at").defaultNow(),
   },
   (t) => [
