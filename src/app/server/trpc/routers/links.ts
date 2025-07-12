@@ -3,6 +3,8 @@ import { baseProcedure, createTRPCRouter } from "../init";
 import { db } from "@/lib/db";
 import { eq } from "drizzle-orm";
 import { link } from "@/lib/db/schema";
+import { user as userTable } from "@/lib/db/schema/auth";
+import { getUserLimits } from "@/lib/access-control";
 
 export const linksRouter = createTRPCRouter({
   getLinksByUserId: baseProcedure
@@ -49,10 +51,28 @@ export const linksRouter = createTRPCRouter({
           "A link with this slug already exists. Please choose another.",
         );
       }
+      // Check user link limit using getUserLimits
+      const userRecord = await db.query.user.findFirst({
+        where: eq(userTable.id, createdById),
+      });
+      const { links: linkLimit } = await getUserLimits();
+      const userLinksCount = userRecord?.links ?? 0;
+      if (userRecord && userLinksCount >= linkLimit) {
+        throw new Error(
+          "You have reached your link limit. Upgrade your plan or delete a link to create a new one.",
+        );
+      }
       const [created] = await db
         .insert(link)
         .values({ key, destination, createdById, status: "online" })
         .returning();
+      // Increment user's link count
+      if (userRecord) {
+        await db
+          .update(userTable)
+          .set({ links: userLinksCount + 1 })
+          .where(eq(userTable.id, createdById));
+      }
       return created;
     }),
   getAllLinks: baseProcedure
