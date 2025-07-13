@@ -35,7 +35,7 @@ export function CreateLinkDialog({
   onOpenChange,
   userId,
 }: CreateLinkDialogProps) {
-  const { data: session, refetch } = authClient.useSession();
+  const { refetch } = authClient.useSession();
   const router = useRouter();
   const utils = trpc.useUtils();
   const form = useForm({ defaultValues: { key: "", destination: "" } });
