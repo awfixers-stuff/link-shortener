@@ -11,15 +11,17 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
+import { UploadButton } from "@/lib/uploadthing";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2Icon, UserIcon } from "lucide-react";
+import { Loader2Icon, UserIcon, UploadIcon } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { off } from "process";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import z from "zod";
+import { twMerge } from "tailwind-merge";
+import { cn } from "@/lib/utils";
 
 const signUpSchema = z
   .object({
@@ -50,7 +52,7 @@ export function SignUpForm({ referrer }: { referrer: string }) {
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState<File | null>(null);
+  const [image, setImage] = useState<string | null>(null);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -65,35 +67,30 @@ export function SignUpForm({ referrer }: { referrer: string }) {
     },
   });
 
-  const convertFileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = (err) => reject(err);
-    });
-  };
+  // const convertFileToBase64 = (file: File): Promise<string> => {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
+  //     reader.readAsDataURL(file);
+  //     reader.onload = () => resolve(reader.result as string);
+  //     reader.onerror = (err) => reject(err);
+  //   });
+  // };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  // const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
 
-    if (file) {
-      setImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  //   if (file) {
+  //     setImage(file);
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setImagePreview(reader.result as string);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
     setLoading(true);
-    let img = "";
-
-    if (image) {
-      img = await convertFileToBase64(image);
-    }
 
     await authClient.signUp.email(
       {
@@ -101,7 +98,7 @@ export function SignUpForm({ referrer }: { referrer: string }) {
         password: data.password,
         username: data.username,
         name: `${data.firstName} ${data.lastName}`,
-        image: img,
+        image: image ?? undefined,
       },
       {
         onSuccess(context) {
@@ -124,42 +121,76 @@ export function SignUpForm({ referrer }: { referrer: string }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-4">
         <div className="mb-4 flex flex-col items-center">
           <div className="relative mb-2 flex size-24 items-center justify-center overflow-hidden rounded-full border bg-gray-100">
-            {imagePreview ? (
-              <Image
-                src={imagePreview}
-                alt="Profile Preview"
-                className="object-cover"
-                fill
-              />
-            ) : (
-              <UserIcon className="size-10 text-black" />
+            <Image
+              src={
+                imagePreview
+                  ? imagePreview
+                  : "https://ef2gxidd9t.ufs.sh/f/ETlTZMbDvDzGETZQPtJDvDzGNXHcTyMLsOkiBCqb70uYnmta"
+              }
+              alt="Profile Preview"
+              className="object-cover"
+              fill
+            />
+          </div>
+          <div className="flex flex-col items-center justify-center gap-1">
+            <UploadButton
+              endpoint="imageUploader"
+              disabled={loading}
+              className="ut-button:bg-primary ut-button:text-primary-foreground ut-button:shadow-xs ut-button:hover:bg-primary/90 ut-button:h-8 ut-button:gap-1.5 ut-button:rounded-md ut-button:p-0"
+              onClientUploadComplete={(res) => {
+                const imageURL = res[0].serverData.fileURL;
+                setImagePreview(imageURL);
+                setImage(imageURL);
+                toast.success("Successfully Uploaded Profile Picture.");
+              }}
+              config={{
+                cn: twMerge,
+              }}
+            />
+            {!imagePreview && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="mt-1 self-center text-red-500"
+                onClick={async () => {
+                  if (image) {
+                    // Extract file key from UploadThing URL
+                    const match = image.match(/\/f\/([^/?]+)/);
+                    const key = match ? match[1] : null;
+
+                    console.log("KEY", key);
+                    if (key) {
+                      try {
+                        const res = await fetch("/server/api/uploadthing", {
+                          method: "DELETE",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ key }),
+                        });
+                        if (!res.ok) {
+                          const data = await res.json();
+                          throw new Error(
+                            data.error || "Failed to delete image",
+                          );
+                        }
+                        toast.success("Profile image removed");
+                      } catch (err) {
+                        toast.error("Failed to remove image", {
+                          description:
+                            err instanceof Error ? err.message : undefined,
+                        });
+                      }
+                    }
+                  }
+                  form.setValue("image", "");
+                  setImage(null);
+                  setImagePreview(null);
+                }}
+              >
+                Remove
+              </Button>
             )}
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() =>
-              document.getElementById("profile-image-input")?.click()
-            }
-          >
-            {imagePreview ? "Change Image" : "Add Profile Image"}
-          </Button>
-          {imagePreview && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="mt-1 text-red-500"
-              onClick={() => {
-                form.setValue("image", "");
-                setImage(null);
-                setImagePreview(null);
-              }}
-            >
-              Remove
-            </Button>
-          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -270,7 +301,6 @@ export function SignUpForm({ referrer }: { referrer: string }) {
                   accept="image/*"
                   onChange={(e) => {
                     field.onChange(e);
-                    handleImageChange(e);
                   }}
                 />
               </FormControl>
