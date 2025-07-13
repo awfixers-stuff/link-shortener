@@ -17,7 +17,10 @@ export function DynamicBreadcrumb() {
   const items = [
     ...segments.map((seg, i) => {
       const href = segments.slice(0, i + 1).join("/");
-      return { name: seg.charAt(0).toUpperCase() + seg.slice(1), href };
+      return {
+        name: seg.charAt(0).toUpperCase() + seg.slice(1),
+        href: `/${href}`,
+      };
     }),
   ];
 
