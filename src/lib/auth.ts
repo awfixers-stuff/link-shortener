@@ -167,10 +167,11 @@ export const auth = betterAuth({
           {
             name: "free",
             priceId: "price_1RjtffRtO1V0nNQXevaCCUiD",
-            limit: { links: 5, analytics: "basic" },
+            limits: { links: 5, analytics: 1 },
           },
         ],
       },
+      async onCustomerCreate(data, request) {},
     }),
   ],
   advanced: {
