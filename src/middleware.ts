@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request, { cookiePrefix: "awfixer" });
+  // const sessionCookie = getCookieCache(request, { cookiePrefix: "awfixer" });
 
   if (!sessionCookie) {
     console.log("No Cookie");
