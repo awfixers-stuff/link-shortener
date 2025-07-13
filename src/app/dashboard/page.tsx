@@ -18,7 +18,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4 p-4">
-      {analytics !== "basic" && (
+      {analytics !== 1 && (
         <div className="auto-rows min grid gap-4 md:grid-cols-3">
           <div className="bg-muted/50 aspect-video rounded-xl" />
           <div className="bg-muted/50 aspect-video rounded-xl" />
