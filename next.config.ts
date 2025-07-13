@@ -8,7 +8,7 @@ jiti.esmResolve("./src/lib/env");
 
 const nextConfig: NextConfig = {
   images: {
-    remotePatterns: [{ hostname: "*.ufs.sh", protocol: "https" }],
+    remotePatterns: [{ hostname: "ef2gxidd9t.ufs.sh", protocol: "https" }],
   },
   /* config options here */
 };
