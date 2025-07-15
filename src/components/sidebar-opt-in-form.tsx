@@ -14,7 +14,7 @@ export function SidebarOptInForm() {
   const { open } = useSidebar();
 
   return (
-    <Card className={`gap-2 py-4 shadow-none ${!open && "hidden"}`}>
+    <Card className={`mb-4 gap-2 py-4 shadow-none ${!open && "hidden"}`}>
       <CardHeader className="px-4">
         <CardTitle className="text-sm">
           Subscribe to the AWFixer Newsletter
