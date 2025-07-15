@@ -1,69 +1,25 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import { UserLimitsProgress } from "../_components/_user-limits";
-import KeyboardShortcut from "@/components/ui/keyboard-shortcut";
-import { KeyboardShortcuts } from "./_components/_keyboard-shortcuts";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AccountTab } from "./_components/_account-tab";
+import { ProfilePage } from "./_components/profile";
+import { auth } from "@/lib/auth";
 
 export default async function DashboardProfilePage() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  //   const subs = await auth.api.listActiveSubscriptions();
-  //   const sub = subs.length > 0 && subs[0];
-
-  if (!session || !session.user) {
-    redirect("/auth/sign-in?ref=/dashboard/profile");
-  }
-
-  return (
-    <div className="flex min-h-[80vh] w-full flex-row gap-8 p-6">
-      {/* Sidebar */}
-      <aside className="flex w-80 flex-col gap-6 border-r pr-6">
-        {/* Logo and User Info */}
-        <div className="flex flex-col items-center gap-2">
-          <Avatar className="size-24">
-            <AvatarImage
-              src={session.user.image ?? ""}
-              alt={session.user.name}
-            />
-            <AvatarFallback>{session?.user.name.slice(0, 2)}</AvatarFallback>
-          </Avatar>
-          <div className="mt-2 text-lg font-semibold">{session.user.name}</div>
-          <div className="text-muted-foreground text-sm">
-            {session.user.email} | {session.user.displayUsername}
-          </div>
-          <span className="mt-2 rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-700">
-            {/* {sub ? sub.plan : "Free"} */}Free
-          </span>
-        </div>
-        {/* Message Usage */}
-        <div className="flex flex-col gap-2">
-          <div className="text-sm font-medium">Plan Usage</div>
-          <div className="text-muted-foreground text-xs">
-            {/* Resets {sub && sub.periodEnd?.toLocaleDateString()} */}Reset
-            01/01/2000
-          </div>
-          <UserLimitsProgress inSidebar={false} />
-        </div>
-        {/* Keyboard Shortcuts */}
-        <KeyboardShortcuts />
-      </aside>
-      {/* Main Content */}
-      <main className="flex-1">
-        {/* Tabs */}
-        <Tabs defaultValue="account">
-          <TabsList className="mb-4 w-full">
-            <TabsTrigger value="account">Account</TabsTrigger>
-            <TabsTrigger value="customization">Customization</TabsTrigger>
-            <TabsTrigger value="settings">Settings</TabsTrigger>
-            <TabsTrigger value="contact-us">Contact Us</TabsTrigger>
-          </TabsList>
-          <AccountTab />
-        </Tabs>
-      </main>
-    </div>
+  const subscriptions = await auth.api.listActiveSubscriptions({
+    headers: await headers(),
+  });
+  const activeSubscription = subscriptions?.find(
+    (sub) => sub.status === "active",
   );
+
+  const data =
+    activeSubscription?.plan &&
+    activeSubscription?.periodEnd &&
+    activeSubscription?.stripeSubscriptionId
+      ? {
+          plan: activeSubscription.plan,
+          periodEnd: activeSubscription.periodEnd,
+          stripeSubscriptionId: activeSubscription.stripeSubscriptionId,
+        }
+      : undefined;
+
+  return <ProfilePage subscription={data} />;
 }

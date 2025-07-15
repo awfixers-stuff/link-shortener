@@ -19,7 +19,7 @@ export function DashboardSidebar() {
     <Sidebar
       variant="floating"
       collapsible="icon"
-      className="flex items-center justify-center"
+      className="bg-background flex items-center justify-center"
     >
       <SidebarHeader className="group-data-[collapsible=icon]:self-center">
         <SidebarMenu>

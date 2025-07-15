@@ -2,13 +2,13 @@
 
 import { useSidebar } from "@/components/ui/sidebar";
 import { Progress } from "@/components/ui/progress";
-import { authClient } from "@/lib/auth-client";
 import { useQuery } from "@tanstack/react-query";
 import { getUserLimits } from "@/lib/access-control";
+import { useDashboardSession } from "@/providers/dashboard-session-provider";
 
 export function UserLimitsProgress({ inSidebar }: { inSidebar: boolean }) {
   const { state } = useSidebar();
-  const { data: session } = authClient.useSession();
+  const session = useDashboardSession();
   const { data: limits, isLoading } = useQuery({
     queryKey: ["user-limits"],
     queryFn: getUserLimits,

@@ -22,7 +22,7 @@ export function KeyboardShortcuts() {
       <div className="flex flex-col gap-1 text-base">
         <div className="flex justify-between">
           <span>Toggle Sidebar</span>
-          <KeyboardShortcut keys={[getCmdOrCtrl(), "B"]} />
+          <KeyboardShortcut keys={[cmdOrCtrl, "B"]} />
         </div>
       </div>
     </div>

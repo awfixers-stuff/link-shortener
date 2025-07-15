@@ -24,17 +24,16 @@ import { redirect, useRouter } from "next/navigation";
 import { trpc } from "@/app/server/trpc/client";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useDashboardSession } from "@/providers/dashboard-session-provider";
 
 export function LinksDataTable({ links }: { links: any[] }) {
-  const { refetch, data: session } = authClient.useSession();
+  const session = useDashboardSession();
   const router = useRouter();
-  const utils = trpc.useUtils();
-  const deleteLink = trpc.links.deleteLink.useMutation();
   const [deletingKey, setDeletingKey] = useState<string | null>(null);
 
-  if (!session || !session.user) {
-    redirect("/auth/sign-in?ref=/dashboard");
-  }
+  const { refetch } = authClient.useSession();
+  const utils = trpc.useUtils();
+  const deleteLink = trpc.links.deleteLink.useMutation();
 
   const handleDelete = async (key: string) => {
     setDeletingKey(key);
