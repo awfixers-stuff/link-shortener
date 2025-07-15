@@ -57,9 +57,16 @@ export const linksRouter = createTRPCRouter({
       const userRecord = await db.query.user.findFirst({
         where: eq(userTable.id, createdById),
       });
+
+      if (!userRecord) {
+        throw new Error(
+          "You're account doesn't exist, please create a new account.",
+        );
+      }
+
       const { links: linkLimit } = await getUserLimits();
-      const userLinksCount = userRecord?.links ?? 0;
-      if (userRecord && userLinksCount >= linkLimit) {
+      const userLinksCount = userRecord.links ?? 0;
+      if (userLinksCount >= linkLimit) {
         throw new Error(
           "You have reached your link limit. Upgrade your plan or delete a link to create a new one.",
         );
