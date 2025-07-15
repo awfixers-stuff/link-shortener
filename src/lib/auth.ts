@@ -14,6 +14,9 @@ import Stripe from "stripe";
 import { stripe } from "@better-auth/stripe";
 import { resendClient as resend } from "./resend";
 import { redisServer as redis } from "./redis";
+import { user } from "./db/schema";
+import { eq } from "drizzle-orm";
+import { emailHarmony } from "better-auth-harmony";
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2025-06-30.basil",
@@ -135,7 +138,7 @@ export const auth = betterAuth({
   },
   session: {
     cookieCache: {
-      enabled: false,
+      enabled: true,
       maxAge: 60 * 60 * 24 * 30,
     },
     expiresIn: 60 * 60 * 24 * 30,
@@ -149,6 +152,7 @@ export const auth = betterAuth({
     throw: true,
   },
   plugins: [
+    emailHarmony(),
     admin(),
     openAPI(),
     username({ minUsernameLength: 5 }),
@@ -163,15 +167,28 @@ export const auth = betterAuth({
       createCustomerOnSignUp: true,
       subscription: {
         enabled: true,
+        requireEmailVerification: true,
         plans: [
           {
-            name: "free",
-            priceId: "price_1RjtffRtO1V0nNQXevaCCUiD",
-            limits: { links: 5, analytics: 1 },
+            name: "pro",
+            priceId: "price_1RkaLWRtO1V0nNQXXpTTXMuw",
+            limits: { links: 50, analytics: 2 },
           },
         ],
+        async onSubscriptionComplete(data, request) {
+          if (data.plan.name === "pro") {
+            await db.update(user).set({
+              analytics: "pro",
+            });
+          }
+        },
+        async onSubscriptionCancel(data) {
+          await db
+            .update(user)
+            .set({ analytics: "basic" })
+            .where(eq(user.stripeCustomerId, data.subscription.referenceId));
+        },
       },
-      async onCustomerCreate(data, request) {},
     }),
   ],
   advanced: {

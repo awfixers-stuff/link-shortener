@@ -17,6 +17,7 @@ export const user = pgTable(
     emailVerified: boolean("email_verified")
       .$defaultFn(() => false)
       .notNull(),
+    normalizedEmail: text("normalized_email").unique(),
     image: text("image").default(
       "https://ef2gxidd9t.ufs.sh/f/ETlTZMbDvDzGETZQPtJDvDzGNXHcTyMLsOkiBCqb70uYnmta",
     ),
