@@ -18,6 +18,7 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PORTAL_LINK: z.url(),
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_RESEND_FROM: z.email(),
+    NEXT_PUBLIC_DISCORD_INVITE: z.url(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
@@ -25,5 +26,6 @@ export const env = createEnv({
     NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_RESEND_FROM: process.env.NEXT_PUBLIC_RESEND_FROM,
+    NEXT_PUBLIC_DISCORD_INVITE: process.env.NEXT_PUBLIC_DISCORD_INVITE
   },
 });
