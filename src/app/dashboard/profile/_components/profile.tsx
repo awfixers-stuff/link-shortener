@@ -6,7 +6,9 @@ import { KeyboardShortcuts } from "./_keyboard-shortcuts";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AccountTab } from "./_account-tab";
 import { CustomizationTab } from "./_customization-tab";
+import { SettingsTab } from "./_settings-tab";
 import { useDashboardSession } from "@/providers/dashboard-session-provider";
+import { ContactTab } from "@/app/dashboard/profile/_components/_contact-tab";
 
 export function ProfilePage({
   subscription,
@@ -67,6 +69,8 @@ export function ProfilePage({
           </TabsList>
           <AccountTab subscription={subscription} />
           <CustomizationTab />
+          <SettingsTab />
+          <ContactTab />
         </Tabs>
       </main>
     </div>
