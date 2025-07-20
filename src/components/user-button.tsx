@@ -41,7 +41,7 @@ export function UserButton() {
           {open ? (
             <Button
               variant="ghost"
-              className="flex flex-1 items-center gap-2 p-2"
+              className="flex flex-1 items-center gap-2 px-1 py-2"
             >
               <Avatar className="size-8">
                 <AvatarImage
