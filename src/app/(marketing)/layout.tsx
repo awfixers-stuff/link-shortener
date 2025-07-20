@@ -1,5 +1,6 @@
 import React from "react";
 import { MarketingNavbar } from "./_navbar";
+import { MarketingFooter } from "@/app/(marketing)/_footer";
 
 export default async function MarketingLayout({
   children,
@@ -11,6 +12,8 @@ export default async function MarketingLayout({
       <MarketingNavbar />
 
       {children}
+
+      <MarketingFooter />
     </div>
   );
 }

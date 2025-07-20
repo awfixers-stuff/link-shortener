@@ -29,7 +29,7 @@ export default function AllLinksPage() {
   const hasMore = data.length === PAGE_SIZE;
 
   return (
-    <main className="mx-auto mt-12 max-w-3xl px-2 py-8">
+    <main className="mx-auto mt-12 max-w-3xl px-2 py-8 flex-1">
       <section>
         <div className="mb-4">
           <h1 className="text-2xl font-bold">
